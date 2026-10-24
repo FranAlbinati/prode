@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prode de los Cinco</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: una columna tipo planilla de prode; tarjetas de duelo que se despliegan en la grilla de partidos */
+:root{
+  --bg:#eef2f7; --surface:#ffffff; --line:#d9e0ea; --ink:#14213a; --muted:#5c6a82;
+  --accent:#2a76b8; --accent-soft:#e1edf8;
+  --win:#1d8549; --win-soft:#e0f2e7; --lose:#c0402c; --lose-soft:#f8e3df; --pend:#9a7410; --pend-soft:#f6eed6;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c131e; --surface:#142033; --line:#24334a; --ink:#e6edf7; --muted:#8fa0bb;
+  --accent:#6fb3ea; --accent-soft:#1a304a;
+  --win:#5fcf8c; --win-soft:#173526; --lose:#f08a76; --lose-soft:#3c1f1b; --pend:#e0bd5c; --pend-soft:#352c14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c131e; --surface:#142033; --line:#24334a; --ink:#e6edf7; --muted:#8fa0bb;
+  --accent:#6fb3ea; --accent-soft:#1a304a;
+  --win:#5fcf8c; --win-soft:#173526; --lose:#f08a76; --lose-soft:#3c1f1b; --pend:#e0bd5c; --pend-soft:#352c14; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+header h1{font-family:var(--display);font-weight:800;font-size:2.1rem;letter-spacing:.01em;line-height:1;margin:0;text-transform:uppercase}
+header p{margin:4px 0 0;color:var(--muted);font-size:.88rem}
+.num{font-variant-numeric:tabular-nums}
+
+.tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{flex:1;border:0;background:none;color:var(--muted);font:600 .95rem var(--body);padding:9px 6px;border-radius:9px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--surface)}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.fechabar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fechabar h2{font-family:var(--display);font-size:1.5rem;font-weight:700;margin:0;text-transform:uppercase;letter-spacing:.02em}
+.fechabar .sub{color:var(--muted);font-size:.82rem}
+select{font:600 .9rem var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:7px 10px}
+.progress{font-size:.82rem;color:var(--muted)}
+.progress b{color:var(--ink)}
+
+.zone{font:700 .72rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:6px 0 -6px}
+.duel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.duel summary{list-style:none;cursor:pointer;padding:14px 14px 12px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.duel summary::-webkit-details-marker{display:none}
+.side{min-width:0}
+.side .n{font-weight:700;font-size:1rem;line-height:1.2;overflow-wrap:anywhere}
+.side.r{text-align:right}
+.side.r .n{color:var(--muted);font-weight:600}
+.side .tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.score{font-family:var(--display);font-weight:800;font-size:2.3rem;line-height:1;display:flex;gap:8px;align-items:baseline}
+.score .dash{color:var(--muted);font-weight:600}
+.meta{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.pill{display:inline-block;font:700 .72rem var(--body);letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:99px}
+.pill.win{background:var(--win-soft);color:var(--win)} .pill.lose{background:var(--lose-soft);color:var(--lose)} .pill.pend{background:var(--pend-soft);color:var(--pend)}
+.chev{transition:transform .2s} details[open] .chev{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
+
+.tblwrap{overflow-x:auto;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th{font:600 .68rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;padding:8px 6px;white-space:nowrap}
+td{padding:9px 6px;border-top:1px solid var(--line);vertical-align:middle}
+td.m{min-width:0}
+td.m .t{font-weight:600;line-height:1.25}
+td.m .k{font-size:.74rem;color:var(--muted)}
+td.c{text-align:center;white-space:nowrap}
+th.c{text-align:center}
+.pick{display:inline-flex;align-items:center;justify-content:center;min-width:34px;padding:3px 6px;border-radius:7px;font:700 .8rem var(--body);background:var(--bg);color:var(--ink)}
+.pick.hit{background:var(--win-soft);color:var(--win)} .pick.miss{background:var(--lose-soft);color:var(--lose);text-decoration:line-through}
+.res{font:700 .8rem var(--body);color:var(--ink)}
+.res small{display:block;font-weight:500;color:var(--muted);font-size:.7rem}
+.res.p{color:var(--pend)}
+
+.board{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.board table td,.board table th{padding:11px 10px}
+.board td.pos{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--muted);width:36px}
+.board tr.lead td.pos{color:var(--accent)}
+.board td.pts{font-family:var(--display);font-weight:800;font-size:1.5rem;text-align:right}
+.board td.name{font-weight:700}
+.board td.rec{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.note{font-size:.8rem;color:var(--muted);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted)}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Prode de los Cinco</h1>
+    <p id="updated"></p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button id="tab-fecha" role="tab" aria-selected="true" data-view="fecha">Fecha</button>
+    <button id="tab-tabla" role="tab" aria-selected="false" data-view="tabla">Tabla general</button>
+  </div>
+
+  <section id="view-fecha" style="display:flex;flex-direction:column;gap:14px"></section>
+  <section id="view-tabla" hidden style="display:flex;flex-direction:column;gap:14px"></section>
+</div>
+
+<script>
+/* ====== DATOS: se actualizan cada finde ======
+   res: "L" | "E" | "V" | null (sin jugar). dia/hora: hora argentina. picks: [nuestro, rival]. */
+const ACTUALIZADO = "Sáb 24/10, 10:00";
+const FECHAS = [
+  {
+    id: "f11", nombre: "11ª Fecha", dias: "23, 24 y 25 de octubre", fase: "2ª fase · 2ª fecha",
+    partidos: {
+      1:{l:"Gimnasia (LP)",v:"Sarmiento (J)",dia:"Vie 23",hora:"18:00",res:"L",gol:"2-0"},
+      2:{l:"Tigre",v:"Atl. Tucumán",dia:"Vie 23",hora:"21:15",res:"V",gol:"0-1"},
+      3:{l:"Napoli",v:"Roma",dia:"Sáb 24",hora:"13:00",res:null},
+      4:{l:"Valencia",v:"Villarreal",dia:"Sáb 24",hora:"13:30",res:null},
+      5:{l:"Banfield",v:"Lanús",dia:"Sáb 24",hora:"14:45",res:null},
+      6:{l:"Internacional",v:"Botafogo",dia:"Sáb 24",hora:"16:30",res:null},
+      7:{l:"Talleres (CBA)",v:"Defensa y Justicia",dia:"Sáb 24",hora:"17:00",res:null},
+      8:{l:"San Lorenzo",v:"Newell's",dia:"Sáb 24",hora:"19:15",res:null},
+      9:{l:"Rosario Central",v:"Huracán",dia:"Sáb 24",hora:"21:30",res:null},
+      10:{l:"Friburgo",v:"Bayern Munich",dia:"Dom 25",hora:"13:30",res:null},
+      11:{l:"Aldosivi",v:"Belgrano (CBA)",dia:"Dom 25",hora:"14:45",res:null},
+      12:{l:"Alte. Brown",v:"Dep. Morón",dia:"Dom 25",hora:"15:30",res:null},
+      13:{l:"Patronato (ER)",v:"Agropecuario (CC)",dia:"Dom 25",hora:"16:00",res:null},
+      14:{l:"Gimnasia (Jujuy)",v:"Atlanta",dia:"Dom 25",hora:"16:00",res:null},
+      15:{l:"Independiente",v:"Boca Juniors",dia:"Dom 25",hora:"17:00",res:null},
+      16:{l:"Barcelona",v:"Real Madrid",dia:"Dom 25",hora:"17:00",res:null},
+    },
+    duelos: [
+      {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Martinez Nadia", picks:{2:["V","L"],3:["V","L,V"],4:["L,E","L"],5:["E,V","L"],6:["L","V"],8:["L","E"],10:["V","E,V"],12:["E","L"],14:["E","L"]}},
+      {zona:"Ascenso", yo:"Francisco Albinati", rival:"Barbalace Gustavo", picks:{1:["L","E"],2:["L","E"],3:["E,V","L"],4:["V","L"],5:["E,V","L"],7:["V","L,V"],8:["E","L"],9:["L","E"],10:["V","L"],11:["V","E,V"],13:["E","L"],15:["E,V","V"]}},
+      {zona:"Ascenso", yo:"Matías Albinati", rival:"Blanco Emiliano", picks:{2:["E","L"],3:["V","L"],4:["E","L"],6:["E","L"],7:["E","L,E"],9:["L","V"],11:["V","E"],13:["E","L"],14:["E","L"],15:["E,V","L"]}},
+      {zona:"Ascenso", yo:"Simón Álvarez", rival:"Morgunovsky León", picks:{2:["L","V"],3:["E","L"],4:["V","E,V"],5:["E","L,E"],8:["L","V"],9:["L","E"],11:["V","L"],12:["L,E","L"],13:["L","V"],14:["L","V"],16:["L,V","V"]}},
+      {zona:"Descenso", yo:"Lucas Tapia", rival:"Cappuccio Giselle", picks:{1:["L","E"],2:["E","L"],3:["L","V"],4:["L","V"],5:["E,V","V"],6:["L","E,V"],7:["L","V"],8:["E","V"],9:["L","V"],11:["V","L"],15:["L,V","V"],16:["L","L,V"]}},
+    ],
+  },
+];
+/* ====== FIN DATOS ====== */
+
+const hit = (pick, res) => pick.split(",").includes(res);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function scoreDuel(f, d){
+  let a=0,b=0,pend=0;
+  for (const [n,[p1,p2]] of Object.entries(d.picks)){
+    const r = f.partidos[n].res;
+    if (!r){pend++;continue}
+    if (hit(p1,r)) a++;
+    if (hit(p2,r)) b++;
+  }
+  return {a,b,pend,total:Object.keys(d.picks).length};
+}
+function status(s){
+  if (s.pend===0) return s.a>s.b?["win","Ganó"]:s.a<s.b?["lose","Perdió"]:["pend","Empató"];
+  const lbl = s.a>s.b?"Va ganando":s.a<s.b?"Va perdiendo":"Van empatados";
+  return [s.a>s.b?"win":s.a<s.b?"lose":"pend", lbl];
+}
+const resLabel = {L:"Local",E:"Empate",V:"Visit."};
+
+function renderFecha(){
+  const el = document.getElementById("view-fecha");
+  const sel = document.getElementById("selFecha");
+  const id = sel ? sel.value : FECHAS[FECHAS.length-1].id;
+  const f = FECHAS.find(x=>x.id===id);
+  const jugados = Object.values(f.partidos).filter(p=>p.res).length;
+  const total = Object.keys(f.partidos).length;
+  let html = `<div class="fechabar"><div><h2>${esc(f.nombre)}</h2><div class="sub">${esc(f.dias)} · ${esc(f.fase)}</div></div>
+    <select id="selFecha" aria-label="Elegir fecha">${FECHAS.map(x=>`<option value="${x.id}"${x.id===id?" selected":""}>${esc(x.nombre)}</option>`).join("")}</select></div>
+    <div class="progress"><b class="num">${jugados}</b> de <span class="num">${total}</span> partidos con resultado. Tocá un duelo para ver partido por partido.</div>`;
+  let zona = null;
+  f.duelos.forEach((d,i)=>{
+    if (d.zona!==zona){ zona=d.zona; html += `<div class="zone">Zona ${esc(zona)}</div>`; }
+    const s = scoreDuel(f,d), [cls,lbl] = status(s);
+    const rows = Object.entries(d.picks).map(([n,[p1,p2]])=>{
+      const p = f.partidos[n], r = p.res;
+      const c = pk => `<span class="pick${r?(hit(pk,r)?" hit":" miss"):""}">${esc(pk)}</span>`;
+      return `<tr><td class="m"><div class="t">${esc(p.l)} – ${esc(p.v)}</div><div class="k num">${n} · ${esc(p.dia)} ${esc(p.hora)}</div></td>
+        <td class="c">${r?`<span class="res">${r}<small>${esc(p.gol||resLabel[r])}</small></span>`:`<span class="res p">${esc(p.hora)}<small>${esc(p.dia)}</small></span>`}</td>
+        <td class="c">${c(p1)}</td><td class="c">${c(p2)}</td></tr>`;
+    }).join("");
+    html += `<details class="duel" id="duel-${i}">
+      <summary>
+        <div class="side"><div class="tag">Nosotros</div><div class="n">${esc(d.yo)}</div></div>
+        <div class="score num"><span>${s.a}</span><span class="dash">–</span><span>${s.b}</span></div>
+        <div class="side r"><div class="tag">Rival</div><div class="n">${esc(d.rival)}</div></div>
+        <div class="meta"><span class="pill ${cls}">${lbl}</span><span class="num">${s.pend?`${s.pend} de ${s.total} por jugar`:"Duelo terminado"} <span class="chev" aria-hidden="true">▾</span></span></div>
+      </summary>
+      <div class="tblwrap"><table><thead><tr><th>Partido</th><th class="c">Res.</th><th class="c">${esc(d.yo.split(" ")[0])}</th><th class="c">Rival</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </details>`;
+  });
+  const fx = Object.entries(f.partidos).map(([n,p])=>`<tr><td class="num" style="color:var(--muted);width:28px">${n}</td>
+      <td class="m"><div class="t">${esc(p.l)} – ${esc(p.v)}</div><div class="k num">${esc(p.dia)} · ${esc(p.hora)} hs</div></td>
+      <td class="c">${p.res?`<span class="res">${p.res}<small>${esc(p.gol||resLabel[p.res])}</small></span>`:`<span class="pill pend">Por jugar</span>`}</td></tr>`).join("");
+  html += `<div class="zone">Partidos de la fecha</div>
+    <div class="board"><div class="tblwrap" style="border-top:0"><table><tbody>${fx}</tbody></table></div></div>`;
+  html += `<div class="legend"><span>L = gana local</span><span>E = empate</span><span>V = gana visitante</span><span>Doble (L,E): suma si sale cualquiera de las dos</span><span>Horarios de Argentina</span></div>
+    <p class="note">Solo cuentan los partidos donde pusieron distinto: los que coinciden suman igual a los dos y no cambian el duelo.</p>`;
+  el.innerHTML = html;
+  document.getElementById("selFecha").addEventListener("change", renderFecha);
+}
+
+function renderTabla(){
+  const t = {};
+  for (const f of FECHAS) for (const d of f.duelos){
+    const s = scoreDuel(f,d);
+    const r = t[d.yo] ||= {name:d.yo,pts:0,g:0,e:0,p:0,vivo:0};
+    r.pts += s.a;
+    if (s.pend) r.vivo++;
+    else if (s.a>s.b) r.g++; else if (s.a<s.b) r.p++; else r.e++;
+  }
+  const rows = Object.values(t).sort((x,y)=>y.pts-x.pts||y.g-x.g||x.name.localeCompare(y.name));
+  const top = rows[0]?.pts;
+  document.getElementById("view-tabla").innerHTML = `
+    <div class="fechabar"><div><h2>Tabla general</h2><div class="sub">Aciertos acumulados de los cinco · ${FECHAS.length} fecha${FECHAS.length>1?"s":""}</div></div></div>
+    <div class="board"><div class="tblwrap" style="border-top:0"><table>
+      <thead><tr><th>#</th><th>Jugador</th><th>Duelos G-E-P</th><th style="text-align:right">Pts</th></tr></thead>
+      <tbody>${rows.map((r,i)=>`<tr class="${r.pts===top&&top>0?"lead":""}"><td class="pos num">${i+1}</td><td class="name">${esc(r.name)}</td>
+        <td class="rec num">${r.g}-${r.e}-${r.p}${r.vivo?` · ${r.vivo} en juego`:""}</td><td class="pts num">${r.pts}</td></tr>`).join("")}</tbody>
+    </table></div></div>
+    <p class="note">Pts: +1 por cada acierto en los partidos de tu duelo, 0 si no le pegás. Duelos G-E-P: cómo terminaron contra el rival de cada fecha.</p>`;
+}
+
+document.getElementById("updated").textContent = "Resultados actualizados: " + ACTUALIZADO;
+document.querySelectorAll(".tabs button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected", x===b));
+  document.getElementById("view-fecha").hidden = b.dataset.view!=="fecha";
+  document.getElementById("view-tabla").hidden = b.dataset.view!=="tabla";
+}));
+renderFecha(); renderTabla();
+</script>
+</body>
+</html>
