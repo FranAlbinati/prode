@@ -130,6 +130,14 @@ const FECHAS = [
       15:{l:"Independiente",v:"Boca Juniors",dia:"Dom 25",hora:"17:00",res:null},
       16:{l:"Barcelona",v:"Real Madrid",dia:"Dom 25",hora:"17:00",res:null},
     },
+    /* Pronósticos completos de los 16 partidos (planilla), en orden 1..16 */
+    pronosticos: {
+      "Gonzalo Pérez":      ["L","V","V","L,E","E,V","L","L","L","L","V","L","E","L","E","V","L"],
+      "Francisco Albinati": ["L","L","E,V","V","E,V","E","V","E","L","V","V","L","E","L","E,V","L"],
+      "Matías Albinati":    ["L","E","V","E","V","E","E","L","L","V","V","V","E","E","E,V","L,V"],
+      "Simón Álvarez":      ["L","L","E","V","E","L","L","L","L","V","V","L,E","L","L","V","L,V"],
+      "Lucas Tapia":        ["L","E","L","L","E,V","L","L","E","L","V","V","E","L","V","L,V","L"],
+    },
     duelos: [
       {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Martinez Nadia", picks:{2:["V","L"],3:["V","L,V"],4:["L,E","L"],5:["E,V","L"],6:["L","V"],8:["L","E"],10:["V","E,V"],12:["E","L"],14:["E","L"]}},
       {zona:"Ascenso", yo:"Francisco Albinati", rival:"Barbalace Gustavo", picks:{1:["L","E"],2:["L","E"],3:["E,V","L"],4:["V","L"],5:["E,V","L"],7:["V","L,V"],8:["E","L"],9:["L","E"],10:["V","L"],11:["V","E,V"],13:["E","L"],15:["E,V","V"]}},
@@ -205,23 +213,35 @@ function renderFecha(){
 
 function renderTabla(){
   const t = {};
-  for (const f of FECHAS) for (const d of f.duelos){
-    const s = scoreDuel(f,d);
-    const r = t[d.yo] ||= {name:d.yo,pts:0,g:0,e:0,p:0,vivo:0};
-    r.pts += s.a;
-    if (s.pend) r.vivo++;
-    else if (s.a>s.b) r.g++; else if (s.a<s.b) r.p++; else r.e++;
+  const row = n => t[n] ||= {name:n,pts:0,jug:0,ult:0,g:0,e:0,p:0,vivo:0};
+  const last = FECHAS[FECHAS.length-1];
+  for (const f of FECHAS){
+    for (const [n,picks] of Object.entries(f.pronosticos||{})){
+      const r = row(n);
+      picks.forEach((pk,i)=>{
+        const res = f.partidos[i+1]?.res;
+        if (!res) return;
+        r.jug++;
+        if (hit(pk,res)){ r.pts++; if (f===last) r.ult++; }
+      });
+    }
+    for (const d of f.duelos){
+      const s = scoreDuel(f,d), r = row(d.yo);
+      if (s.pend) r.vivo++;
+      else if (s.a>s.b) r.g++; else if (s.a<s.b) r.p++; else r.e++;
+    }
   }
   const rows = Object.values(t).sort((x,y)=>y.pts-x.pts||y.g-x.g||x.name.localeCompare(y.name));
   const top = rows[0]?.pts;
   document.getElementById("view-tabla").innerHTML = `
-    <div class="fechabar"><div><h2>Tabla general</h2><div class="sub">Aciertos acumulados de los cinco · ${FECHAS.length} fecha${FECHAS.length>1?"s":""}</div></div></div>
+    <div class="fechabar"><div><h2>Tabla general</h2><div class="sub">Aciertos de los cinco en todos los partidos · ${FECHAS.length} fecha${FECHAS.length>1?"s":""}</div></div></div>
     <div class="board"><div class="tblwrap" style="border-top:0"><table>
-      <thead><tr><th>#</th><th>Jugador</th><th>Duelos G-E-P</th><th style="text-align:right">Pts</th></tr></thead>
+      <thead><tr><th>#</th><th>Jugador</th><th>${esc(last.nombre)}</th><th>Duelos G-E-P</th><th style="text-align:right">Pts</th></tr></thead>
       <tbody>${rows.map((r,i)=>`<tr class="${r.pts===top&&top>0?"lead":""}"><td class="pos num">${i+1}</td><td class="name">${esc(r.name)}</td>
+        <td class="rec num">+${r.ult}</td>
         <td class="rec num">${r.g}-${r.e}-${r.p}${r.vivo?` · ${r.vivo} en juego`:""}</td><td class="pts num">${r.pts}</td></tr>`).join("")}</tbody>
     </table></div></div>
-    <p class="note">Pts: +1 por cada acierto en los partidos de tu duelo, 0 si no le pegás. Duelos G-E-P: cómo terminaron contra el rival de cada fecha.</p>`;
+    <p class="note">Pts: +1 por cada partido acertado de los 16 de cada fecha (dobles suman si sale cualquiera de las dos), 0 si no le pegás. Cuentan también los partidos donde pusiste lo mismo que tu rival. Duelos G-E-P: cómo terminaron contra el rival de cada fecha.</p>`;
 }
 
 document.getElementById("updated").textContent = "Resultados actualizados: " + ACTUALIZADO;
