@@ -109,7 +109,7 @@ th.c{text-align:center}
 /* ====== DATOS: se actualizan cada finde ======
    res: "L" | "E" | "V" | null (sin jugar). dia/hora: hora argentina. picks: [nuestro, rival]. */
 const NUESTROS = ["Gonzalo Pérez","Francisco Albinati","Matías Albinati","Simón Álvarez","Lucas Tapia"];
-const ACTUALIZADO = "Sáb 31/10, 12:00";
+const ACTUALIZADO = "Sáb 31/10, 12:10";
 const FECHAS = [
   {
     id: "f11", nombre: "11ª Fecha", dias: "23, 24 y 25 de octubre", fase: "2ª fase · 2ª fecha",
@@ -197,9 +197,11 @@ const norm = p => p.split(",").sort().join(",");
 function duelPicks(f, d){
   if (d.picks) return d.picks;
   const a = f.boletas[d.yo], b = f.boletas[d.rival], out = {};
-  a.forEach((p,i)=>{ if (norm(p)!==norm(b[i])) out[i+1] = [p, b[i]]; });
+  const anul = n => f.sinPuntos?.[n] || [];
+  a.forEach((p,i)=>{ if (norm(p)!==norm(b[i]) || anul(d.yo).includes(i+1) || anul(d.rival).includes(i+1)) out[i+1] = [p, b[i]]; });
   return out;
 }
+const noVale = (f,n,i) => (f.sinPuntos?.[n]||[]).includes(+i);
 const boletasDe = f => f.pronosticos || f.boletas || {};
 function scoreDuel(f, d){
   let a=0,b=0,pend=0;
@@ -207,8 +209,8 @@ function scoreDuel(f, d){
   for (const [n,[p1,p2]] of Object.entries(picks)){
     const r = f.partidos[n].res;
     if (!r){pend++;continue}
-    if (hit(p1,r)) a++;
-    if (hit(p2,r)) b++;
+    if (hit(p1,r) && !noVale(f,d.yo,n)) a++;
+    if (hit(p2,r) && !noVale(f,d.rival,n)) b++;
   }
   return {a,b,pend,total:Object.keys(picks).length};
 }
@@ -235,10 +237,10 @@ function renderFecha(){
     const s = scoreDuel(f,d), [cls,lbl] = status(s);
     const rows = Object.entries(duelPicks(f,d)).map(([n,[p1,p2]])=>{
       const p = f.partidos[n], r = p.res;
-      const c = pk => `<span class="pick${r?(hit(pk,r)?" hit":" miss"):""}">${esc(pk)}</span>`;
-      return `<tr><td class="m"><div class="t">${esc(p.l)} – ${esc(p.v)}</div><div class="k num">${n} · ${esc(p.dia)} ${esc(p.hora)}</div></td>
+      const c = (pk,who) => noVale(f,who,n) ? `<span class="pick miss" title="No suma: boleta fuera de término">${esc(pk)}</span>` : `<span class="pick${r?(hit(pk,r)?" hit":" miss"):""}">${esc(pk)}</span>`;
+      return `<tr><td class="m"><div class="t">${esc(p.l)} – ${esc(p.v)}</div><div class="k num">${n} · ${esc(p.dia)} ${esc(p.hora)}${noVale(f,d.yo,n)||noVale(f,d.rival,n)?` · no suma para ${esc((noVale(f,d.yo,n)?d.yo:d.rival).split(" ")[0])} (boleta fuera de término)`:""}</div></td>
         <td class="c">${r?`<span class="res">${r}<small>${esc(p.gol||resLabel[r])}</small></span>`:`<span class="res p">${esc(p.hora)}<small>${esc(p.dia)}</small></span>`}</td>
-        <td class="c">${c(p1)}</td><td class="c">${c(p2)}</td></tr>`;
+        <td class="c">${c(p1,d.yo)}</td><td class="c">${c(p2,d.rival)}</td></tr>`;
     }).join("");
     html += `<details class="duel" id="duel-${i}">
       <summary>
