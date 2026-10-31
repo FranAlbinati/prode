@@ -108,7 +108,8 @@ th.c{text-align:center}
 <script>
 /* ====== DATOS: se actualizan cada finde ======
    res: "L" | "E" | "V" | null (sin jugar). dia/hora: hora argentina. picks: [nuestro, rival]. */
-const ACTUALIZADO = "Dom 25/10, 19:05";
+const NUESTROS = ["Gonzalo Pérez","Francisco Albinati","Matías Albinati","Simón Álvarez","Lucas Tapia"];
+const ACTUALIZADO = "Sáb 31/10, 12:00";
 const FECHAS = [
   {
     id: "f11", nombre: "11ª Fecha", dias: "23, 24 y 25 de octubre", fase: "2ª fase · 2ª fecha",
@@ -146,21 +147,68 @@ const FECHAS = [
       {zona:"Descenso", yo:"Lucas Tapia", rival:"Cappuccio Giselle", picks:{1:["L","E"],2:["E","L"],3:["L","V"],4:["L","V"],5:["E,V","V"],6:["L","E,V"],7:["L","V"],8:["E","V"],9:["L","V"],11:["V","L"],15:["L,V","V"],16:["L","L,V"]}},
     ],
   },
+  {
+    id: "f12", nombre: "12ª Fecha", dias: "30 y 31 de octubre y 1 de noviembre", fase: "2ª fase · 3ª fecha",
+    partidos: {
+      1:{l:"Huracán",v:"Tigre",dia:"Vie 30",hora:"19:00",res:"V",gol:"0-2"},
+      2:{l:"Estudiantes (RC)",v:"Gimnasia (LP)",dia:"Vie 30",hora:"19:00",res:"V",gol:"1-2"},
+      3:{l:"Sarmiento (J)",v:"Rosario Central",dia:"Vie 30",hora:"21:15",res:"V",gol:"1-2"},
+      4:{l:"Racing Club",v:"Aldosivi",dia:"Vie 30",hora:"21:15",res:"L",gol:"2-1"},
+      5:{l:"Dep. Riestra",v:"Talleres (CBA)",dia:"Sáb 31",hora:"17:00",res:null},
+      6:{l:"Chelsea",v:"Manchester United",dia:"Sáb 31",hora:"09:30",res:"L",gol:"2-0"},
+      7:{l:"Bayern Munich",v:"Borussia Dortmund",dia:"Sáb 31",hora:"14:30",res:null},
+      8:{l:"Milan",v:"Inter",dia:"Sáb 31",hora:"16:45",res:null},
+      9:{l:"Vélez",v:"San Lorenzo",dia:"Sáb 31",hora:"19:15",res:null},
+      10:{l:"Estudiantes (LP)",v:"Instituto (CBA)",dia:"Sáb 31",hora:"21:30",res:null},
+      11:{l:"Frosinone",v:"Torino",dia:"Dom 1",hora:"11:00",res:null},
+      12:{l:"Liverpool",v:"Arsenal",dia:"Dom 1",hora:"13:30",res:null},
+      13:{l:"Boca Juniors",v:"River Plate",dia:"Dom 1",hora:"15:00",res:null},
+      14:{l:"Juventus",v:"Napoli",dia:"Dom 1",hora:"16:45",res:null},
+      15:{l:"Athletic Bilbao",v:"Real Sociedad",dia:"Dom 1",hora:"17:00",res:null},
+      16:{l:"Belgrano (CBA)",v:"Barracas Central",dia:"Dom 1",hora:"18:30",res:null},
+    },
+    /* Boletas completas (PDF), en orden 1..16. Los duelos salen de acá: cuentan los partidos donde difieren. */
+    boletas: {
+      "Gonzalo Pérez":      ["L","V","V","V","V","L","L,V","V","L","L","E,V","L","L","L","E","L"],
+      "Morgunovsky León":   ["L","V","E,V","L","E,V","L","L","V","L","E","V","V","V","L","E","L"],
+      "Simón Álvarez":      ["L","V","V","L","L","L","L","V","L","L","L,V","V","L","L","L,V","L"],
+      "Francisco Albinati": ["L","V","V","E","E","L","L","L,E","L","E,V","V","E","V","L","L","L"],
+      "Matías Albinati":    ["L","V","V","L","E","L","L","L,E","L","L","E","E","L,V","L","L","L"],
+      "Vazquez Mabel":      ["L","V","V","L","V","V","L","L,V","L","L","L","L,V","L","V","L","L"],
+      "Lucas Tapia":        ["E","L","V","L","E","L,V","L","L,V","L","L","L","E","E","V","L","V"],
+      "Salas Santiago":     ["E","L","V","L","L","L","L","E,V","L","E","V","L","L,E","V","E","E"],
+    },
+    duelos: [
+      {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Morgunovsky León"},
+      {zona:"Ascenso", yo:"Simón Álvarez", rival:"Francisco Albinati", interno:true},
+      {zona:"Ascenso", yo:"Matías Albinati", rival:"Vazquez Mabel"},
+      {zona:"Descenso", yo:"Lucas Tapia", rival:"Salas Santiago"},
+    ],
+  },
 ];
 /* ====== FIN DATOS ====== */
 
 const hit = (pick, res) => pick.split(",").includes(res);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
+const norm = p => p.split(",").sort().join(",");
+function duelPicks(f, d){
+  if (d.picks) return d.picks;
+  const a = f.boletas[d.yo], b = f.boletas[d.rival], out = {};
+  a.forEach((p,i)=>{ if (norm(p)!==norm(b[i])) out[i+1] = [p, b[i]]; });
+  return out;
+}
+const boletasDe = f => f.pronosticos || f.boletas || {};
 function scoreDuel(f, d){
   let a=0,b=0,pend=0;
-  for (const [n,[p1,p2]] of Object.entries(d.picks)){
+  const picks = duelPicks(f,d);
+  for (const [n,[p1,p2]] of Object.entries(picks)){
     const r = f.partidos[n].res;
     if (!r){pend++;continue}
     if (hit(p1,r)) a++;
     if (hit(p2,r)) b++;
   }
-  return {a,b,pend,total:Object.keys(d.picks).length};
+  return {a,b,pend,total:Object.keys(picks).length};
 }
 function status(s){
   if (s.pend===0) return s.a>s.b?["win","Ganó"]:s.a<s.b?["lose","Perdió"]:["pend","Empató"];
@@ -183,7 +231,7 @@ function renderFecha(){
   f.duelos.forEach((d,i)=>{
     if (d.zona!==zona){ zona=d.zona; html += `<div class="zone">Zona ${esc(zona)}</div>`; }
     const s = scoreDuel(f,d), [cls,lbl] = status(s);
-    const rows = Object.entries(d.picks).map(([n,[p1,p2]])=>{
+    const rows = Object.entries(duelPicks(f,d)).map(([n,[p1,p2]])=>{
       const p = f.partidos[n], r = p.res;
       const c = pk => `<span class="pick${r?(hit(pk,r)?" hit":" miss"):""}">${esc(pk)}</span>`;
       return `<tr><td class="m"><div class="t">${esc(p.l)} – ${esc(p.v)}</div><div class="k num">${n} · ${esc(p.dia)} ${esc(p.hora)}</div></td>
@@ -192,12 +240,12 @@ function renderFecha(){
     }).join("");
     html += `<details class="duel" id="duel-${i}">
       <summary>
-        <div class="side"><div class="tag">Nosotros</div><div class="n">${esc(d.yo)}</div></div>
+        <div class="side"><div class="tag">${d.interno?"Duelo interno":"Nosotros"}</div><div class="n">${esc(d.yo)}</div></div>
         <div class="score num"><span>${s.a}</span><span class="dash">–</span><span>${s.b}</span></div>
-        <div class="side r"><div class="tag">Rival</div><div class="n">${esc(d.rival)}</div></div>
+        <div class="side r"><div class="tag">${d.interno?"Duelo interno":"Rival"}</div><div class="n">${esc(d.rival)}</div></div>
         <div class="meta"><span class="pill ${cls}">${lbl}</span><span class="num">${s.pend?`${s.pend} de ${s.total} por jugar`:"Duelo terminado"} <span class="chev" aria-hidden="true">▾</span></span></div>
       </summary>
-      <div class="tblwrap"><table><thead><tr><th>Partido</th><th class="c">Res.</th><th class="c">${esc(d.yo.split(" ")[0])}</th><th class="c">Rival</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="tblwrap"><table><thead><tr><th>Partido</th><th class="c">Res.</th><th class="c">${esc(d.yo.split(" ")[0])}</th><th class="c">${esc(d.interno?d.rival.split(" ")[0]:"Rival")}</th></tr></thead><tbody>${rows}</tbody></table></div>
     </details>`;
   });
   const fx = Object.entries(f.partidos).map(([n,p])=>`<tr><td class="num" style="color:var(--muted);width:28px">${n}</td>
@@ -216,7 +264,8 @@ function renderTabla(){
   const row = n => t[n] ||= {name:n,pts:0,jug:0,ult:0,g:0,e:0,p:0,vivo:0};
   const last = FECHAS[FECHAS.length-1];
   for (const f of FECHAS){
-    for (const [n,picks] of Object.entries(f.pronosticos||{})){
+    for (const [n,picks] of Object.entries(boletasDe(f))){
+      if (!NUESTROS.includes(n)) continue;
       const r = row(n);
       picks.forEach((pk,i)=>{
         const res = f.partidos[i+1]?.res;
@@ -226,9 +275,14 @@ function renderTabla(){
       });
     }
     for (const d of f.duelos){
-      const s = scoreDuel(f,d), r = row(d.yo);
-      if (s.pend) r.vivo++;
-      else if (s.a>s.b) r.g++; else if (s.a<s.b) r.p++; else r.e++;
+      const s = scoreDuel(f,d);
+      const lados = [[d.yo,s.a,s.b]];
+      if (d.interno) lados.push([d.rival,s.b,s.a]);
+      for (const [n,a,b] of lados){
+        const r = row(n);
+        if (s.pend) r.vivo++;
+        else if (a>b) r.g++; else if (a<b) r.p++; else r.e++;
+      }
     }
   }
   const rows = Object.values(t).sort((x,y)=>y.pts-x.pts||y.g-x.g||x.name.localeCompare(y.name));
