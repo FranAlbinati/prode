@@ -178,6 +178,8 @@ const FECHAS = [
       "Lucas Tapia":        ["E","L","V","L","E","L,V","L","L,V","L","L","L","E","E","V","L","V"],
       "Salas Santiago":     ["E","L","V","L","L","L","L","E,V","L","E","V","L","L,E","V","E","E"],
     },
+    /* Partidos que no suman en la tabla general (boleta fuera de término) */
+    sinPuntos: {"Lucas Tapia":[1,2]},
     duelos: [
       {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Morgunovsky León"},
       {zona:"Ascenso", yo:"Simón Álvarez", rival:"Francisco Albinati", interno:true},
@@ -269,7 +271,7 @@ function renderTabla(){
       const r = row(n);
       picks.forEach((pk,i)=>{
         const res = f.partidos[i+1]?.res;
-        if (!res) return;
+        if (!res || f.sinPuntos?.[n]?.includes(i+1)) return;
         r.jug++;
         if (hit(pk,res)){ r.pts++; if (f===last) r.ult++; }
       });
