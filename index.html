@@ -109,7 +109,7 @@ th.c{text-align:center}
 /* ====== DATOS: se actualizan cada finde ======
    res: "L" | "E" | "V" | null (sin jugar). dia/hora: hora argentina. picks: [nuestro, rival]. */
 const NUESTROS = ["Gonzalo Pérez","Francisco Albinati","Matías Albinati","Simón Álvarez","Lucas Tapia"];
-const ACTUALIZADO = "Dom 1/11, 20:42";
+const ACTUALIZADO = "Sáb 7/11, 10:22";
 const FECHAS = [
   {
     id: "f11", nombre: "11ª Fecha", dias: "23, 24 y 25 de octubre", fase: "2ª fase · 2ª fecha",
@@ -185,6 +185,43 @@ const FECHAS = [
       {zona:"Ascenso", yo:"Simón Álvarez", rival:"Francisco Albinati", interno:true},
       {zona:"Ascenso", yo:"Matías Albinati", rival:"Vazquez Mabel"},
       {zona:"Descenso", yo:"Lucas Tapia", rival:"Salas Santiago"},
+    ],
+  },
+  {
+    id: "f13", nombre: "13ª Fecha", dias: "6, 7 y 8 de noviembre", fase: "2ª fase · 4ª fecha",
+    partidos: {
+      1:{l:"Independiente",v:"Dep. Riestra",dia:"Vie 6",hora:"19:00",res:"L",gol:"2-1"},
+      2:{l:"Unión",v:"Vélez",dia:"Vie 6",hora:"19:00",res:"L",gol:"2-0"},
+      3:{l:"San Lorenzo",v:"Platense",dia:"Vie 6",hora:"19:00",res:"V",gol:"0-2"},
+      4:{l:"Tigre",v:"Sarmiento (J)",dia:"Vie 6",hora:"22:00",res:"L",gol:"1-0"},
+      5:{l:"Banfield",v:"Atl. Tucumán",dia:"Vie 6",hora:"22:00",res:"E",gol:"2-2"},
+      6:{l:"Talleres (CBA)",v:"Estudiantes (LP)",dia:"Sáb 7",hora:"15:00",res:null},
+      7:{l:"Gimnasia (Mza)",v:"Ind. Rivadavia (Mza)",dia:"Sáb 7",hora:"15:00",res:null},
+      8:{l:"Rosario Central",v:"Estudiantes (RC)",dia:"Sáb 7",hora:"17:30",res:null},
+      9:{l:"Boca Juniors",v:"Defensa y Justicia",dia:"Sáb 7",hora:"17:30",res:null},
+      10:{l:"Argentinos Jrs",v:"Huracán",dia:"Sáb 7",hora:"17:30",res:null},
+      11:{l:"Instituto (CBA)",v:"Newell's",dia:"Sáb 7",hora:"22:00",res:null},
+      12:{l:"Napoli",v:"Lazio",dia:"Dom 8",hora:"08:30",res:null},
+      13:{l:"Manchester United",v:"Aston Villa",dia:"Dom 8",hora:"13:30",res:null},
+      14:{l:"Inter",v:"Como",dia:"Dom 8",hora:"14:00",res:null},
+      15:{l:"Atlético Madrid",v:"Barcelona",dia:"Dom 8",hora:"17:00",res:null},
+      16:{l:"C. Córdoba (SdE)",v:"Lanús",dia:"Dom 8",hora:"19:30",res:null},
+    },
+    boletas: {
+      "Francisco Albinati": ["L","L","L","L","L","L","V","L","L","L","E","E","E,V","L,V","V","E"],
+      "Gonzalo Pérez":      ["L","V","V","L","L,E","L","V","L","L","L","L","L","E","L","V","L,E"],
+      "Simón Álvarez":      ["L","E","L","L,V","V","L,V","E","L","L","L","L","V","L","L","V","V"],
+      "Achucarro Silvio":   ["L","V","L","L","L","L","L","L","L","L","L","L","L","L,V","L,V","V"],
+      "Matías Albinati":    ["L","V","E","L","L","V","E","L","L","L","L","E","E,V","L,V","V","V"],
+      "Liprino Ignacio":    ["L","V","E","L","L","V","V","L","L","E","L","L","E","L,V","L,V","V"],
+      "Lucas Tapia":        ["L","V","E","L","L","L,V","V","L","L","L","V","L","L","E","V","V"],
+      "Rodriguez Hernán":   ["L","V","L","L","L","V","E","L","L","E","L","L","L,E","L","E,V","V"],
+    },
+    duelos: [
+      {zona:"Ascenso", yo:"Francisco Albinati", rival:"Gonzalo Pérez", interno:true},
+      {zona:"Ascenso", yo:"Simón Álvarez", rival:"Achucarro Silvio"},
+      {zona:"Ascenso", yo:"Matías Albinati", rival:"Liprino Ignacio"},
+      {zona:"Descenso", yo:"Lucas Tapia", rival:"Rodriguez Hernán"},
     ],
   },
 ];
