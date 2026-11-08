@@ -11,3 +11,7 @@
 3. No uses notas en vivo ("en vivo", "live", "minuto a minuto" con marcador parcial).
 4. Cargar: en `index.html`, bloque DATOS, completar `res` ("L"/"E"/"V" según el local del prode) y `gol` ("x-y" local-visitante), actualizar `ACTUALIZADO` con la hora argentina, commit y push a `main`.
 5. Si no está, programá otra búsqueda en 5 minutos con send_later. No esperes a que el usuario avise.
+
+## Regla extra (aprendida con Instituto-Newell's, F13)
+- No cargar antes de inicio + 2:00 aunque parezca terminado: los goles en el descuento cambian el resultado.
+- La nota tiene que decir explícitamente que terminó ("empataron", "ganó", "final", "cerró"), no en presente ("le gana", "se lo dio vuelta" en una nota en vivo).
