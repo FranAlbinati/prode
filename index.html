@@ -109,7 +109,7 @@ th.c{text-align:center}
 /* ====== DATOS: se actualizan cada finde ======
    res: "L" | "E" | "V" | null (sin jugar). dia/hora: hora argentina. picks: [nuestro, rival]. */
 const NUESTROS = ["Gonzalo Pérez","Francisco Albinati","Matías Albinati","Simón Álvarez","Lucas Tapia"];
-const ACTUALIZADO = "Dom 8/11, 21:32";
+const ACTUALIZADO = "Sáb 14/11, 10:53";
 const FECHAS = [
   {
     id: "f11", nombre: "11ª Fecha", dias: "23, 24 y 25 de octubre", fase: "2ª fase · 2ª fecha",
@@ -222,6 +222,46 @@ const FECHAS = [
       {zona:"Ascenso", yo:"Simón Álvarez", rival:"Achucarro Silvio"},
       {zona:"Ascenso", yo:"Matías Albinati", rival:"Liprino Ignacio"},
       {zona:"Descenso", yo:"Lucas Tapia", rival:"Rodriguez Hernán"},
+    ],
+  },
+  {
+    id: "f14", nombre: "14ª Fecha", dias: "13, 14 y 15 de noviembre", fase: "2ª fase · 5ª fecha",
+    partidos: {
+      1:{l:"Argentina",v:"Uruguay",dia:"Vie 13",hora:"20:00",res:"V",gol:"1-2"},
+      2:{l:"Colombia",v:"Chile",dia:"Vie 13",hora:"21:00",res:"L",gol:"1-0"},
+      3:{l:"Japón",v:"Brasil",dia:"Sáb 14",hora:"07:15",res:"L",gol:"3-2"},
+      4:{l:"Atlanta",v:"Estudiantes (BA)",dia:"Sáb 14",hora:"15:00",res:null},
+      5:{l:"Temperley",v:"Ciudad de Bolívar",dia:"Sáb 14",hora:"16:00",res:null},
+      6:{l:"Colón (Sta Fe)",v:"Midland",dia:"Sáb 14",hora:"18:00",res:null},
+      7:{l:"Dep. Madryn",v:"Dep. Maipú",dia:"Sáb 14",hora:"19:00",res:null},
+      8:{l:"Banfield",v:"Boca Juniors",dia:"Sáb 14",hora:"19:00",res:null},
+      9:{l:"Gimnasia (J)",v:"Atl. Brown",dia:"Sáb 14",hora:"20:00",res:null},
+      10:{l:"Chipre",v:"Montenegro",dia:"Dom 15",hora:"11:00",res:null},
+      11:{l:"Letonia",v:"Armenia",dia:"Dom 15",hora:"11:00",res:null},
+      12:{l:"Bielorrusia",v:"Albania",dia:"Dom 15",hora:"14:00",res:null},
+      13:{l:"Dep. Morón",v:"Colegiales",dia:"Dom 15",hora:"15:00",res:null},
+      14:{l:"España",v:"Inglaterra",dia:"Dom 15",hora:"16:45",res:null},
+      15:{l:"Bélgica",v:"Italia",dia:"Dom 15",hora:"16:45",res:null},
+      16:{l:"Godoy Cruz (Mza)",v:"Tristán Suárez",dia:"Dom 15",hora:"17:00",res:null},
+    },
+    boletas: {
+      "Francisco Albinati": ["L","L","V","L","L","L","L,E","E,V","L","V","V","V","L","L","L","L"],
+      "Martinez Nadia":     ["L","L","L","L","L","L","E","V","L,V","L","L","L,E","L","E","L","L"],
+      "Gonzalo Pérez":      ["L","L","V","E","E","L,E","L,E","V","L","E","E","L","L","L","E","L"],
+      "Achucarro Silvio":   ["L","L","L,V","L","L","L","L","V","L","L","L","L","L","L","V","L"],
+      "Simón Álvarez":      ["L","L","L","L","L","L","L","V","L","V","V","E,V","L","L,V","E,V","L"],
+      "Ibarra Sergio":      ["L","L","L,V","L","L","L","E","V","E","V","L","L","L","L,E","L","V"],
+      "Matías Albinati":    ["L","L","L","L","L","V","L,E","E,V","L","V","V","V","L","L","L","L"],
+      "Espíndola Federico": ["L","L","V","L","L","L","V","V","L","E","L","L","L","L,V","V","L,V"],
+      "Lucas Tapia":        ["L","L","V","L","L","E","V","E,V","L","V","E","L","V","L","L,V","L"],
+      "Romero Fabio":       ["L,E","L","E","L","E","E","E","V","E","L","L","L","E","L,V","L","E"],
+    },
+    duelos: [
+      {zona:"Ascenso", yo:"Francisco Albinati", rival:"Martinez Nadia"},
+      {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Achucarro Silvio"},
+      {zona:"Ascenso", yo:"Simón Álvarez", rival:"Ibarra Sergio"},
+      {zona:"Ascenso", yo:"Matías Albinati", rival:"Espíndola Federico"},
+      {zona:"Descenso", yo:"Lucas Tapia", rival:"Romero Fabio"},
     ],
   },
 ];
