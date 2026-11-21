@@ -109,7 +109,7 @@ th.c{text-align:center}
 /* ====== DATOS: se actualizan cada finde ======
    res: "L" | "E" | "V" | null (sin jugar). dia/hora: hora argentina. picks: [nuestro, rival]. */
 const NUESTROS = ["Gonzalo Pérez","Francisco Albinati","Matías Albinati","Simón Álvarez","Lucas Tapia"];
-const ACTUALIZADO = "Dom 15/11, 19:01";
+const ACTUALIZADO = "Sáb 21/11, 10:11";
 const FECHAS = [
   {
     id: "f11", nombre: "11ª Fecha", dias: "23, 24 y 25 de octubre", fase: "2ª fase · 2ª fecha",
@@ -262,6 +262,47 @@ const FECHAS = [
       {zona:"Ascenso", yo:"Simón Álvarez", rival:"Ibarra Sergio"},
       {zona:"Ascenso", yo:"Matías Albinati", rival:"Espíndola Federico"},
       {zona:"Descenso", yo:"Lucas Tapia", rival:"Romero Fabio"},
+    ],
+  },
+  {
+    id: "f15", nombre: "15ª Fecha", dias: "20 al 23 de noviembre", fase: "2ª fase · 6ª fecha",
+    partidos: {
+      1:{l:"Vélez",v:"Belgrano (CBA)",dia:"Vie 20",hora:"20:00",res:"E",gol:"1-1"},
+      2:{l:"Sevilla",v:"Real Betis",dia:"Sáb 21",hora:"14:30",res:null},
+      3:{l:"Defensa y Justicia",v:"Barracas Central",dia:"Sáb 21",hora:"15:00",res:null},
+      4:{l:"Palmeiras",v:"Flamengo",dia:"Sáb 21",hora:"16:30",res:null},
+      5:{l:"Argentinos Jrs",v:"Independiente",dia:"Sáb 21",hora:"17:00",res:null},
+      6:{l:"Atl. Mineiro",v:"Boca Juniors",dia:"Sáb 21",hora:"19:30",res:null},
+      7:{l:"Pachuca",v:"Toluca",dia:"Sáb 21",hora:"19:50",res:null},
+      8:{l:"Pumas",v:"Monterrey",dia:"Sáb 21",hora:"22:00",res:null},
+      9:{l:"Sassuolo",v:"Genoa",dia:"Dom 22",hora:"11:00",res:null},
+      10:{l:"Rosario Central",v:"Gimnasia (Mza)",dia:"Dom 22",hora:"16:00",res:null},
+      11:{l:"Atalanta",v:"Inter",dia:"Dom 22",hora:"16:45",res:null},
+      12:{l:"River Plate",v:"Lanús",dia:"Dom 22",hora:"19:00",res:null},
+      13:{l:"Instituto (CBA)",v:"Huracán",dia:"Dom 22",hora:"22:00",res:null},
+      14:{l:"Monza",v:"Fiorentina",dia:"Lun 23",hora:"16:45",res:null},
+      15:{l:"Gimnasia (LP)",v:"Newell's",dia:"Lun 23",hora:"17:00",res:null},
+      16:{l:"Brentford",v:"Everton",dia:"Lun 23",hora:"17:00",res:null},
+    },
+    /* "-" = el rival no jugó ese partido (cuenta como no acertado) */
+    boletas: {
+      "Simón Álvarez":      ["L","V","L","E","L","V","V","L","L,V","L","V","L","L","V","L","L,V"],
+      "Cappuccio Pablo":    ["L","L","L","L,V","E","V","E","V","E","L","V","E,V","E","V","V","V"],
+      "Gonzalo Pérez":      ["L","E","L","L","E","V","E","E,V","E,V","L","V","L","L","V","L","V"],
+      "Ibarra Sergio":      ["L","E","L","L,E","L","V","E","L","E","L","V","E,V","L","L","L","L"],
+      "Francisco Albinati": ["L","E","L","V","L","L,E","E","V","E","L,E","V","L","L","E","L","L"],
+      "Morgunovsky León":   ["-","E","L","L","E","L","V","L","V","L","V","L,E","L,E","V","V","V"],
+      "Matías Albinati":    ["L","V","L","E","L","V","V","L","L,V","L","V","L","L","V","L","L,V"],
+      "Maffassanti Ignacio":["L","L","L","V","L","V","L,E","L","E,V","L","V","L","L","V","L","L"],
+      "Lucas Tapia":        ["L","L","E","L,V","L","L,E","V","L","V","L","V","L","E","V","V","V"],
+      "Godoy Clarisa":      ["-","V","V","L","L,E","L","V","L","E","E","V","L,V","L","V","V","L"],
+    },
+    duelos: [
+      {zona:"Ascenso", yo:"Simón Álvarez", rival:"Cappuccio Pablo"},
+      {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Ibarra Sergio"},
+      {zona:"Ascenso", yo:"Francisco Albinati", rival:"Morgunovsky León"},
+      {zona:"Ascenso", yo:"Matías Albinati", rival:"Maffassanti Ignacio"},
+      {zona:"Descenso", yo:"Lucas Tapia", rival:"Godoy Clarisa"},
     ],
   },
 ];
