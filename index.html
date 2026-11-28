@@ -337,12 +337,15 @@ const FECHAS = [
       "Liprino Ignacio":    ["L","V","V","L","L","E,V","L","L,E","V","V","L","V","L","V","L","V"],
       "Lucas Tapia":        ["V","V","E","V","V","E","V","L","E","V","L,V","L,V","L","E","L","L"],
       "Gundin Pablo":       ["L","V","L","L","L","L,E","L","L,V","V","V","L","L","L","L","L","L"],
+      "Morgunovsky León":   ["-","-","-","E","L","L","V","V","V","L","E,V","L","V","V","V","E"],
+      "Achucarro Silvio":   ["L","V","L","L","L","L,V","L","L,V","V","V","L","L","L","L","L","L"],
     },
     duelos: [
       {zona:"Ascenso", yo:"Gonzalo Pérez", rival:"Cappuccio Pablo"},
       {zona:"Ascenso", yo:"Simón Álvarez", rival:"Barbalace Gustavo"},
       {zona:"Ascenso", yo:"Francisco Albinati", rival:"Sacot Santiago"},
       {zona:"Ascenso", yo:"Matías Albinati", rival:"Liprino Ignacio"},
+      {zona:"Ascenso", yo:"Morgunovsky León", rival:"Achucarro Silvio", seguimiento:true},
       {zona:"Descenso", yo:"Lucas Tapia", rival:"Gundin Pablo"},
     ],
   },
@@ -403,12 +406,12 @@ function renderFecha(){
     }).join("");
     html += `<details class="duel" id="duel-${i}">
       <summary>
-        <div class="side"><div class="tag">${d.interno?"Duelo interno":"Nosotros"}</div><div class="n">${esc(d.yo)}</div></div>
+        <div class="side"><div class="tag">${d.interno?"Duelo interno":d.seguimiento?"Seguimiento (no suma)":"Nosotros"}</div><div class="n">${esc(d.yo)}</div></div>
         <div class="score num"><span>${s.a}</span><span class="dash">–</span><span>${s.b}</span></div>
-        <div class="side r"><div class="tag">${d.interno?"Duelo interno":"Rival"}</div><div class="n">${esc(d.rival)}</div></div>
+        <div class="side r"><div class="tag">${d.interno?"Duelo interno":d.seguimiento?"Seguimiento (no suma)":"Rival"}</div><div class="n">${esc(d.rival)}</div></div>
         <div class="meta"><span class="pill ${cls}">${lbl}</span><span class="num">${s.pend?`${s.pend} de ${s.total} por jugar`:"Duelo terminado"} <span class="chev" aria-hidden="true">▾</span></span></div>
       </summary>
-      <div class="tblwrap"><table><thead><tr><th>Partido</th><th class="c">Res.</th><th class="c">${esc(d.yo.split(" ")[0])}</th><th class="c">${esc(d.interno?d.rival.split(" ")[0]:"Rival")}</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="tblwrap"><table><thead><tr><th>Partido</th><th class="c">Res.</th><th class="c">${esc(d.yo.split(" ")[0])}</th><th class="c">${esc(d.interno||d.seguimiento?d.rival.split(" ")[0]:"Rival")}</th></tr></thead><tbody>${rows}</tbody></table></div>
     </details>`;
   });
   const fx = Object.entries(f.partidos).map(([n,p])=>`<tr><td class="num" style="color:var(--muted);width:28px">${n}</td>
@@ -438,6 +441,7 @@ function renderTabla(){
       });
     }
     for (const d of f.duelos){
+      if (d.seguimiento || !NUESTROS.includes(d.yo)) continue;
       const s = scoreDuel(f,d);
       const lados = [[d.yo,s.a,s.b]];
       if (d.interno) lados.push([d.rival,s.b,s.a]);
